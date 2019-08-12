@@ -35,6 +35,8 @@ public:
     bool insert(int key); // true if inserted, false if already exist -> not inserted
 
     //deletions
+    void transplant(RBNode* u, RBNode* v);
+    bool erase(RBNode* z);
 
 
 };
