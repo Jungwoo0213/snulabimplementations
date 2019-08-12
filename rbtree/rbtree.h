@@ -36,7 +36,7 @@ public:
 
     //deletions
     void transplant(RBNode* u, RBNode* v);
-    bool erase(RBNode* z);
-
+    bool erase(int key);
+    void erase_fixup(RBNode* x);
 
 };
