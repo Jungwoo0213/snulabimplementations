@@ -1,3 +1,6 @@
+#ifndef RBTREE_H
+#define RBTREE_H
+
 class RBNode {
 public:
     static const int RED = 0;
@@ -40,3 +43,5 @@ public:
     void erase_fixup(RBNode* x);
 
 };
+
+#endif

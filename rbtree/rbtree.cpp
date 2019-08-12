@@ -155,6 +155,7 @@ bool RBTree::insert(int key){
     return true;
 }
 
+
 void RBTree::transplant(RBNode* u, RBNode* v){
     if (u->p == nil)
         root = v;
@@ -163,42 +164,6 @@ void RBTree::transplant(RBNode* u, RBNode* v){
     else
         u->p->right = v;
     v->p = u->p;
-}
-
-bool RBTree::erase(int key){
-    RBNode* z = search(key);
-    if (z==nil) return false;
-
-    RBNode* y = z;
-    RBNode* x;
-    int y_orig_color = y->color;
-    if (z->left == nil){
-        x = z->right;
-        transplant(z, z->right);
-    } else if (z->right == nil){
-        x = z->left;
-        transplant(z, z->left);
-    } else {
-        y = minimum(z->right);
-        y_orig_color = y->color;
-        x = y->right;
-        if (y->p == z)
-            x->p = y;
-        else{
-            transplant(y, y->right);
-            y->right = z->right;
-            y->right->p = y;
-        }
-        transplant(z, y);
-        y->left = z->left;
-        y->left->p = y;
-        y->color = z->color;
-    }
-    if (y_orig_color == RBNode::BLACK)
-        erase_fixup(x);
-    
-    delete z;
-    return true;
 }
 
 void RBTree::erase_fixup(RBNode* x){
@@ -256,4 +221,40 @@ void RBTree::erase_fixup(RBNode* x){
         
     }
     x->color = RBNode::BLACK;
+}
+
+bool RBTree::erase(int key){
+    RBNode* z = search(key);
+    if (z==nil) return false;
+
+    RBNode* y = z;
+    RBNode* x;
+    int y_orig_color = y->color;
+    if (z->left == nil){
+        x = z->right;
+        transplant(z, z->right);
+    } else if (z->right == nil){
+        x = z->left;
+        transplant(z, z->left);
+    } else {
+        y = minimum(z->right);
+        y_orig_color = y->color;
+        x = y->right;
+        if (y->p == z)
+            x->p = y;
+        else{
+            transplant(y, y->right);
+            y->right = z->right;
+            y->right->p = y;
+        }
+        transplant(z, y);
+        y->left = z->left;
+        y->left->p = y;
+        y->color = z->color;
+    }
+    if (y_orig_color == RBNode::BLACK)
+        erase_fixup(x);
+    
+    delete z;
+    return true;
 }
