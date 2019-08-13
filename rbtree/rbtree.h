@@ -32,6 +32,11 @@ public:
 	void insert_fixup(RBNode* z);
 	bool insert(int key); // true if inserted, false if already exist -> not inserted
 
+    void transplant(RBNode* u, RBNode* v);
+    void erase_fixup(RBNode* x);
+    bool erase(int key);
+
+    /*
 	void transplant(RBNode* u, RBNode* v){
         if (u->p == nil)
             root = v;
@@ -133,4 +138,5 @@ public:
         delete z;
         return true;
     };
+    */
 };
