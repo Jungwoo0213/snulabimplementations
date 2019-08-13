@@ -40,8 +40,8 @@ public:
         else
             u->p->right = v;
         v->p = u->p;
-    }
-	void erase_fixup(RBNode* z){
+    };
+	void erase_fixup(RBNode* x){
          while( x != root and x->color == RBNode::BLACK){
             if (x==x->p->left){
                 RBNode* w = x->p->right;
@@ -96,7 +96,7 @@ public:
             
         }
         x->color = RBNode::BLACK;
-    }
+    };
 
 	bool erase(int key){
         RBNode* z = search(key);
@@ -132,5 +132,5 @@ public:
         
         delete z;
         return true;
-    }
+    };
 };

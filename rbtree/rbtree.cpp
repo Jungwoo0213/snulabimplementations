@@ -89,68 +89,67 @@ void RBTree::right_rotate(RBNode* x){
     x->p = y;
 }
 
-void RBTree::insert_fixup(RBNode* z){
-    while(z->p->color == RBNode::RED){
-        if (z->p == z->p->p->left){
-            RBNode* y = z->p->p->right;
-            if (y->color == RBNode::RED){
-                z->p->color = RBNode::BLACK;
-                y->color = RBNode::BLACK;
-                z->p->p->color = RBNode::RED;
-                z = z->p->p;
-            } else {
-                if (z== z->p->right){
-                    z = z->p;
-                    left_rotate(z);
-                }
-                z->p->color = RBNode::BLACK;
-                z->p->p->color = RBNode::RED;
-                right_rotate(z->p->p);
-            }
-        } else {
-            RBNode* y = z->p->p->left;
-            if (y->color == RBNode::RED){
-                z->p->color = RBNode::BLACK;
-                y->color = RBNode::BLACK;
-                z->p->p->color = RBNode::RED;
-                z = z->p->p;
-            } else {
-                if (z== z->p->left){
-                    z = z->p;
-                    right_rotate(z);
-                }
-                z->p->color = RBNode::BLACK;
-                z->p->p->color = RBNode::RED;
-                left_rotate(z->p->p);
-            }
-        }
-    }
-    root->color = RBNode::BLACK;
+void RBTree::insert_fixup(RBNode* z) {
+	while (z->p->color == RBNode::RED) {
+		if (z->p == z->p->p->left) {
+			RBNode* y = z->p->p->right;
+			if (y->color == RBNode::RED) {
+				z->p->color = RBNode::BLACK;
+				y->color = RBNode::BLACK;
+				z->p->p->color = RBNode::RED;
+				z = z->p->p;
+			}
+			else {
+				if (z == z->p->right) {
+					z = z->p;
+					left_rotate(z);
+				}
+				z->p->color = RBNode::BLACK;
+				z->p->p->color = RBNode::RED;
+				right_rotate(z->p->p);
+			}
+		}
+		else {
+			RBNode* y = z->p->p->left;
+			if (y->color == RBNode::RED) {
+				z->p->color = RBNode::BLACK;
+				y->color = RBNode::BLACK;
+				z->p->p->color = RBNode::RED;
+				z = z->p->p;
+			}
+			else {
+				if (z == z->p->left) {
+					z = z->p;
+					right_rotate(z);
+				}
+				z->p->color = RBNode::BLACK;
+				z->p->p->color = RBNode::RED;
+				left_rotate(z->p->p);
+			}
+		}
+	}
+	root->color = RBNode::BLACK;
 }
 
-bool RBTree::insert(int key){
-    RBNode* z;
-    z->key = key;
+bool RBTree::insert(int key) {
+	RBNode* y = nil;
+	RBNode* x = root;
+	while (x != nil) {
+		y = x;
+		if (key == x->key) return false;
+		if (key < x->key) x = x->left;
+		else x = x->right;
+	}
 
-    RBNode* y = nil;
-    RBNode* x = root;
-    while(x != nil){
-        y = x;
-        if (key == x->key) return false;
-        if(z->key < x->key)
-            x = x->left;
-        else x = x->right;
-    z->p = y;
-    if(y==nil)
-        root = z;
-    else if(z->key < y->key)
-        y->left = z;
-    else
-        y->right = z;
-    z->left = nil;
-    z->right = nil;
-    z->color = RBNode::RED;
-    insert_fixup(z);
-    }
-    return true;
+	RBNode* z = new RBNode();
+	z->key = key;
+	z->left = nil;
+	z->right = nil;
+	z->color = RBNode::RED;
+	z->p = y;
+	if (y == nil) root = z;
+	else if (z->key < y->key) y->left = z;
+	else y->right = z;
+	RBTree::insert_fixup(z);
+	return true;
 }
