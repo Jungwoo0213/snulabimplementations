@@ -29,12 +29,12 @@ public:
 	void left_rotate(RBNode* z);
 	void right_rotate(RBNode* z);
 
-    //insert
+   	 //insert
 	void insert_fixup(RBNode* z);
 	bool insert(int key); // true if inserted, false if already exist -> not inserted
 
-    //delete
-    void transplant(RBNode* u, RBNode* v);
-    void erase_fixup(RBNode* x);
-    bool erase(int key);
+   	 //delete
+	void transplant(RBNode* u, RBNode* v);
+	void erase_fixup(RBNode* x);
+	bool erase(int key);
 };
