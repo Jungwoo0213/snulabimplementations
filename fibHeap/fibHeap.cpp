@@ -2,18 +2,22 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <cmath>
+#include <iostream>
+#include <limits.h>
+
+using namespace std;
 
 fnode* fibHeap::insert(int key){
     fnode* x = new fnode(key);
     x->degree = 0;
     x->child = nullptr;
     x->mark = false;
-    if (this->min == nullptr){
+    if (min == nullptr){
         insRoot(x);
     } else {
         insRoot(x);
-        if (x->key < this->min->key)
-            this->min = x;
+        if (x->key < min->key)
+            min = x;
     }
     num++;
 }
@@ -42,7 +46,7 @@ fibHeap* fibHeap::join(const fibHeap* H2){
 }
 
 fnode* fibHeap::extract_min(){
-    fnode* z = this->min;
+    fnode* z = min;
     if (z != nullptr){
         fnode* x = z->child;
         for (int i=0; i<z->degree; i++){
@@ -57,25 +61,108 @@ fnode* fibHeap::extract_min(){
         z->left->right = z->right;
         this->rootNum--;
 
-        if (this->num == 1) this->min = nullptr;
+        if (num == 1) min = nullptr;
         else {
-            this->min = root;
-            consolidate(this);
+            min = root;
+            consolidate();
         }
 
-        this->num--;  
+        num--;  
     }
 
     return z;
 }
 
-void fibHeap::consolidate(fibHeap* H){
+void fibHeap::consolidate(){
     double phi = 1.61803;
-    int maxDegree = floor(log(H->num)/log(phi));
-    fnode* A = new fnode[maxDegree+1];
+    const int maxDegree = floor(log(num)/log(phi));
+    fnode** A = new fnode*[maxDegree+1];
     for(int i=0; i<maxDegree+2; i++){
         A[i] = nullptr;
     }
+    fnode* w = root;
+    fnode* x;
+    for(int i=0; i<rootNum; i++){
+        x = w;
+        int d = x->degree;
+        while( A[d] != nullptr){
+            fnode* y = A[d];
+            if (x->key > y->key){
+                fnode* tmp = x;
+                x = y;
+                y = tmp;
+            }
+            fib_heap_link(y, x);
+            A[d] = nullptr;
+            d++;
+        }
+        A[d] = x;
+        w = w->right;
+    }
+    min = nullptr;
+    for (int i=0; i<maxDegree+1; i++){
+        if(A[i]!= nullptr){
+            if(min != nullptr){
+                min = A[i];
+            } else if (A[i]->key < min->key){
+                min = A[i];
+            }
+        }
+    } 
+    //end of consolidate
+}
+
+bool fibHeap::decrease_key(fnode* x, int newKey){
+    if (newKey > x->key){
+        cerr << "new key is greater than current key" <<endl;
+        return false;
+    }
+    x->key = newKey;
+    fnode* y = x->p;
+
+    if(y != nullptr && (x->key < y->key)){
+        cut(x, y);
+        cascading_cut(y);
+    }
+    if(x->key < min->key)
+        min = x;
+
+    return true;
+}
+
+void fibHeap::cut(fnode* x, fnode* y){
+    if (y->child == x){
+        y->child = x->right;
+    }
+
+    if (y->degree==1)
+        y->child = nullptr;
+    else {
+        x->right->left = x->left;
+        x->left->right = x->right;
+    }
     
-    
+    y->degree--;
+
+    insRoot(x);
+    x->p = nullptr;
+    x->mark = false;
+}
+
+void fibHeap::cascading_cut(fnode* y){
+    fnode* z = y->p;
+    if(z != nullptr){
+        if(y->mark == false)
+            y->mark =true;
+        else{
+            cut(y, z);
+            cascading_cut(z);
+        }
+    }
+}
+
+bool fibHeap::erase(fnode* x){
+    decrease_key(x, INT_MIN);
+    extract_min();
+    return true;
 }
