@@ -20,6 +20,7 @@ fnode* fibHeap::insert(int key){
             min = x;
     }
     num++;
+    return x;
 }
 
 fibHeap* fibHeap::join(const fibHeap* H2){
