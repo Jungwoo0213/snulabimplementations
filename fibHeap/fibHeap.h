@@ -13,7 +13,7 @@ public:
     
     fnode(){
         mark = false;
-
+        degree = 0;
     }
 
     fnode(int key){
@@ -21,6 +21,7 @@ public:
         mark = false;
 
         p = child = left = right = nullptr;
+        this->key = key;
     }
 };
 
@@ -48,6 +49,7 @@ public:
             newRoot->left = last;
         }
         rootNum++;
+        return true;
     }
     fnode* insert(int key);
 
