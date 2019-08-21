@@ -33,11 +33,17 @@ fibHeap* fibHeap::join(const fibHeap* H2){
     fnode* last2 = H2->root->left;
 
     //concatenating the root list of H2 with the root list of H
-    last1->right = root2;
-    root2->left = last1;
-    root1->left = last2;
-    last2->right = root1;
-    H->root = root1;
+    if(root1 == nullptr)
+        H->root = root2;
+    else if (root2 == nullptr){
+        H->root = root1;
+    } else {
+        last1->right = root2;
+        root2->left = last1;
+        root1->left = last2;
+        last2->right = root1;
+        H->root = root1;
+    }
     H->rootNum = H1->rootNum + H2->rootNum;
 
     if (H1->min == nullptr || (H2->min != nullptr && H2->min->key < H1->min->key))
@@ -48,68 +54,92 @@ fibHeap* fibHeap::join(const fibHeap* H2){
 
 fnode* fibHeap::extract_min(){
     fnode* z = min;
-    if (z != nullptr){
-        fnode* x = z->child;
-        for (int i=0; i<z->degree; i++){
-            insRoot(x);
-            x->p = nullptr;
-            x->right;
-        }
-        //remove z from root list
-        if(z==root)
-            root = z->right;
-        z->right->left = z->left;
-        z->left->right = z->right;
-        this->rootNum--;
 
-        if (num == 1) min = nullptr;
-        else {
+    if (z != nullptr){
+
+        if (z->child != nullptr){
+            fnode* x = z->child;
+            fnode* xr;
+            for (int i=0; i<z->degree; i++){
+                xr = x->right;
+                insRoot(x);
+                x = xr;
+            }
+        }
+        
+        //remove z from root list
+        if (z->right != z){
+            if(z==root)
+                root = z->right;
+            z->right->left = z->left;
+            z->left->right = z->right;
+            rootNum--;
+        } else {
+            root = nullptr;
+        }
+        
+        
+        if (num == 1) {
+            min = nullptr;
+            assert(root==nullptr);
+        } else {
             min = root;
             consolidate();
         }
 
-        num--;  
+        num--;
     }
 
     return z;
 }
 
 void fibHeap::consolidate(){
-    double phi = 1.61803;
+    const double phi = 1.61803;
     const int maxDegree = floor(log(num)/log(phi));
+
     fnode** A = new fnode*[maxDegree+1];
     for(int i=0; i<maxDegree+2; i++){
         A[i] = nullptr;
     }
     fnode* w = root;
     fnode* x;
-    for(int i=0; i<rootNum; i++){
+
+    int curNum = rootNum;
+    
+    for(int i=0; i<curNum; i++){
         x = w;
         int d = x->degree;
+
         while( A[d] != nullptr){
             fnode* y = A[d];
             if (x->key > y->key){
                 fnode* tmp = x;
                 x = y;
                 y = tmp;
+                w = x;
             }
+
             fib_heap_link(y, x);
+
             A[d] = nullptr;
             d++;
         }
         A[d] = x;
+
         w = w->right;
     }
+
     min = nullptr;
     for (int i=0; i<maxDegree+1; i++){
         if(A[i]!= nullptr){
-            if(min != nullptr){
+            if(min == nullptr){
                 min = A[i];
             } else if (A[i]->key < min->key){
                 min = A[i];
             }
         }
     } 
+    
     //end of consolidate
 }
 
