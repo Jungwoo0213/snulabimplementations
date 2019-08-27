@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include "../dijkstra/dijkstra.h"
+
 using namespace std;
 
 class fnode{
@@ -13,10 +15,13 @@ public:
     fnode* child;
     fnode* left;
     fnode* right;
+
+    vertex* v;
     
     fnode(){
         mark = false;
         degree = 0;
+        v = nullptr;
     }
 
     fnode(int key){
@@ -25,6 +30,10 @@ public:
 
         p = child = left = right = nullptr;
         this->key = key;
+    }
+    fnode(vertex* v){ 
+        fnode(v->d);
+        this->v = v;
     }
 };
 
@@ -57,11 +66,35 @@ public:
     }
     fnode* insert(int key);
 
+    fnode* insert_vertex(vertex* v){
+        fnode* x = new fnode(v);
+        x->degree = 0;
+        x->child = nullptr;
+        x->mark = false;
+        if (min == nullptr){
+            insRoot(x);
+        } else {
+            insRoot(x);
+            if (x->key < min->key)
+                min = x;
+        }
+        num++;
+        return x;
+    }
+
     fnode* minimum(){
         return min;
     }
 
     fnode* extract_min();
+
+    bool empty() const{
+        if(num==0)
+            return true;
+        else
+            return false;
+        
+    }
 
 
     fibHeap* join(const fibHeap* H2);
