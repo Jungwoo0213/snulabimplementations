@@ -1,32 +1,15 @@
+#ifndef DIJKSTRA_H
+#define DIJKSTRA_H
+
 #include <vector>
 #include <limits>
 #include <assert.h>
+#include <algorithm>
+
+#include "vertex.h"
+#include "fibHeap.h"
 
 using namespace std;
-
-class vertex {
-public:
-    vertex* p;
-    int d;
-    char k;
-    vector<pair<vertex*, int>> adj;
-
-    vertex(char k){
-        p = nullptr;
-        d = numeric_limits<int>::max();
-        degree = 0;
-        this->k = k;
-    }
-    void insert_edge(vertex* v, int weight){
-        pair<vertex*, int> pr ( (vertex*) v, weight);
-        v->adj.push_back(pr);
-    }
-    int num_degree(){return degree;}
-    void increment_degree() {degree++;}
-
-private:
-    int degree;
-};
 
 class graph{
 public:
@@ -34,10 +17,17 @@ public:
     int numEdges;
     vector<vertex> vertices;
 
+    graph(){
+        numEdges = 0;
+        numVer = 0;
+    }
+
     void add_vertex(vertex* u){
         vertices.push_back(*u);
         numVer++;
     }
+    void add_edge(vertex* u, vertex* v, int weight);
+    /*
     void add_edge(vertex* u, vertex* v, int weight){
         assert( u != nullptr);
         assert( v != nullptr);
@@ -46,11 +36,24 @@ public:
         u->increment_degree();
         numEdges++;
     }
-    graph(){
-        numEdges = 0;
-        numVer = 0;
+    */
+    void dijkstra(vertex* s){
+        initializeSS(s);
+        vector<vertex> set;
+        fibHeap* Q = new fibHeap();
+        vector<vertex>::iterator it;
+        for(it=vertices.begin(); it!=vertices.end(); it++){
+            Q->insert_vertex( &(*it) );
+        }
+        while(Q->empty() == false){
+            vertex* u = Q->extract_min()->v;
+            set.push_back(*u);
+            vector<pair<vertex*, int>>::iterator it;
+            for(it=u->adj.begin(); it!=u->adj.end(); it++){
+                relax(u, (vertex*)it->first, it->second);
+            }
+        }
     }
-    void dijkstra(vertex* s);
 private:
     void initializeSS(vertex* s){
         vector<vertex>::iterator it;
@@ -67,3 +70,5 @@ private:
         }
     }
 };
+
+#endif

@@ -1,14 +1,16 @@
 #include <iostream>
 
+#include "fibHeap.h"
+#include "vertex.h"
 #include "dijkstra.h"
 
 int main(){
     graph* G = new graph();
-    vertex* s = new vertex(s);
-    vertex* t = new vertex(t);
-    vertex* x = new vertex(x);
-    vertex* y = new vertex(y);
-    vertex* z = new vertex(z);
+    vertex* s = new vertex('s');
+    vertex* t = new vertex('t');
+    vertex* x = new vertex('x');
+    vertex* y = new vertex('y');
+    vertex* z = new vertex('z');
 
     G->add_vertex(s);
     G->add_vertex(t);
