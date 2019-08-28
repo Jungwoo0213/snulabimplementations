@@ -32,11 +32,11 @@ int main(){
     G->add_edge(z, s, 7);
     G->add_edge(z, x, 6);
 
-    cout << G->vertices.at(0).k<<endl;
-    cout << G->vertices.at(1).k<<endl;
-    cout << G->vertices.at(2).k<<endl;
-    cout << G->vertices.at(3).k<<endl;
-    cout << G->vertices.at(4).k<<endl;
+    cout << G->vertices.at(0)->k<<endl;
+    cout << G->vertices.at(1)->k<<endl;
+    cout << G->vertices.at(2)->k<<endl;
+    cout << G->vertices.at(3)->k<<endl;
+    cout << G->vertices.at(4)->k<<endl;
 
     cout << s->num_degree() << endl;
 
@@ -44,11 +44,11 @@ int main(){
 
     cout << s->adj.at(0).first->k << endl;
 
-    cout << G->vertices[0].adj.size() << endl;
+    cout << G->vertices[0]->adj.size() << endl;
 
-    cout << G->vertices.at(0).adj.size() << endl;
+    cout << G->vertices.at(0)->adj.size() << endl;
 
-    cout << G->vertices.at(0).adj.at(0).second << endl;
+    cout << G->vertices.at(0)->adj.at(0).second << endl;
 
     G->dijkstra(s);
 

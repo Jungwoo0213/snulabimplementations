@@ -55,8 +55,8 @@ private:
     void initializeSS(vertex* s){
         vector<vertex*>::iterator it;
         for(it = vertices.begin(); it!= vertices.end(); it++){
-            *it->d = numeric_limits<int>::max();
-            *it->p = nullptr;
+            (*it)->d = numeric_limits<int>::max();
+            (*it)->p = nullptr;
         }
         s->d = 0;
     }
