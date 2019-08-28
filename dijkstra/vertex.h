@@ -4,6 +4,8 @@
 #include <limits>
 #include <vector>
 
+#include <iostream>
+
 using namespace std;
 
 class vertex {
@@ -19,12 +21,18 @@ public:
         degree = 0;
         this->k = k;
     }
-    void insert_edge(vertex* v, int weight){
-        pair<vertex*, int> pr ( (vertex*) v, weight);
-        v->adj.push_back(pr);
+    void insert_edge(vertex* v, int weight){       
+        pair<vertex*, int> pr (v, weight);
+
+        cout << "first: " << pr.first->k << "  second: " << pr.second << endl;
+
+        adj.push_back(pr);
+
+        cout << "adj size: " << adj.size() << endl;
+
+        degree++;
     }
     int num_degree(){return degree;}
-    void increment_degree() {degree++;}
 
 private:
     int degree;

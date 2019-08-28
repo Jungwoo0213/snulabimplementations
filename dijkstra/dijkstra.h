@@ -15,7 +15,7 @@ class graph{
 public:
     int numVer;
     int numEdges;
-    vector<vertex> vertices;
+    vector<vertex*> vertices;
 
     graph(){
         numEdges = 0;
@@ -23,26 +23,24 @@ public:
     }
 
     void add_vertex(vertex* u){
-        vertices.push_back(*u);
+        vertices.push_back(u);
         numVer++;
     }
     
     void add_edge(vertex* u, vertex* v, int weight){
         assert( u != nullptr);
         assert( v != nullptr);
-        u->adj.push_back(pair<vertex*, int>(v, weight));
-
-        u->increment_degree();
+        u->insert_edge(v, weight);
         numEdges++;
     }
-    
+
     void dijkstra(vertex* s){
         initializeSS(s);
         vector<vertex> set;
         fibHeap* Q = new fibHeap();
-        vector<vertex>::iterator it;
+        vector<vertex*>::iterator it;
         for(it=vertices.begin(); it!=vertices.end(); it++){
-            Q->insert_vertex( &(*it) );
+            Q->insert_vertex( *it );
         }
         while(Q->empty() == false){
             vertex* u = Q->extract_min()->v;
@@ -55,10 +53,10 @@ public:
     }
 private:
     void initializeSS(vertex* s){
-        vector<vertex>::iterator it;
+        vector<vertex*>::iterator it;
         for(it = vertices.begin(); it!= vertices.end(); it++){
-            it->d = numeric_limits<int>::max();
-            it->p = nullptr;
+            *it->d = numeric_limits<int>::max();
+            *it->p = nullptr;
         }
         s->d = 0;
     }
