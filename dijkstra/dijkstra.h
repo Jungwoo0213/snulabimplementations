@@ -26,8 +26,7 @@ public:
         vertices.push_back(*u);
         numVer++;
     }
-    void add_edge(vertex* u, vertex* v, int weight);
-    /*
+    
     void add_edge(vertex* u, vertex* v, int weight){
         assert( u != nullptr);
         assert( v != nullptr);
@@ -36,7 +35,7 @@ public:
         u->increment_degree();
         numEdges++;
     }
-    */
+    
     void dijkstra(vertex* s){
         initializeSS(s);
         vector<vertex> set;

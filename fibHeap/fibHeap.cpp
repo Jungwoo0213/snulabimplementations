@@ -1,9 +1,11 @@
-#include "fibHeap.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <cmath>
 #include <iostream>
 #include <limits.h>
+
+#include "../dijkstra/vertex.h"
+#include "fibHeap.h"
 
 using namespace std;
 

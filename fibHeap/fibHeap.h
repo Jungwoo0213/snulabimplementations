@@ -1,7 +1,11 @@
+#ifndef FIBHEAP_H
+#define FIBHEAP_H
+
 #include <assert.h>
 #include <iostream>
 
-#include "../dijkstra/dijkstra.h"
+
+#include "../dijkstra/vertex.h"
 
 using namespace std;
 
@@ -138,3 +142,6 @@ private:
     void cut(fnode* x, fnode* y);
     void cascading_cut(fnode* y);
 };
+
+
+#endif
