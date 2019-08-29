@@ -38,25 +38,12 @@ int main(){
     cout << G->vertices.at(3)->k<<endl;
     cout << G->vertices.at(4)->k<<endl;
 
-    cout << s->num_degree() << endl;
-
-    cout << s->adj.size() << endl;
-
-    cout << s->adj.at(0).first->k << endl;
-
-    cout << G->vertices[0]->adj.size() << endl;
-
-    cout << G->vertices.at(0)->adj.size() << endl;
-
-    cout << G->vertices.at(0)->adj.at(0).second << endl;
-
     G->dijkstra(s);
 
     cout<<"t.p = " << t->p->k <<endl;
     cout<<"x.p = " << x->p->k <<endl;
     cout<<"y.p = " << y->p->k <<endl;
     cout<<"z.p = " << z->p->k <<endl;
-
 
     return 0;
 }

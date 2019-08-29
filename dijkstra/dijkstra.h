@@ -35,6 +35,7 @@ public:
     }
 
     void dijkstra(vertex* s){
+
         initializeSS(s);
         vector<vertex> set;
         fibHeap* Q = new fibHeap();
@@ -61,7 +62,7 @@ private:
         s->d = 0;
     }
     void relax(vertex* u, vertex* v, int w){
-        if(v->d > u->d + w){
+        if(v->d > u->d + w && u->d != numeric_limits<int>::max()){
             v->d = u->d + w;
             v->p = u;
         }
