@@ -27,6 +27,18 @@ public:
         int n = T.length();
         int m = P.length();
         pi = compute_prefix_function();
+
+        cout << "prefix computed" << endl;
+
+        cout << "hex: " << hex << P[8];
+
+        cout << "m: "<< m <<endl;
+
+        for (int i=0; i<m; i++){
+            cout << pi[i] << " ";
+        }
+        cout <<endl;
+
         int q=0;
         for (int i=1; i<=n; i++){
             while(q>0 && P[q] != T[i-1]){
