@@ -29,9 +29,6 @@ public:
         pi = compute_prefix_function();
 
         cout << "prefix computed" << endl;
-
-        cout << "hex: " << hex << P[8];
-
         cout << "m: "<< m <<endl;
 
         for (int i=0; i<m; i++){
@@ -58,7 +55,7 @@ public:
         int* temp_pi = new int[m];
         temp_pi[0] = 0;
         int k = 0;
-        for (int q=0; q<=m; q++){
+        for (int q=2; q<=m; q++){
             while(k>0 && P[k] != P[q-1])
                 k = temp_pi[k-1];
             if (P[k] == P[q-1])
