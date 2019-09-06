@@ -12,13 +12,13 @@ public:
     int TLength;
     int* pi;
 
-    kmp(string* pName, string* TName){
+    kmp(string pName, string TName){
         ifstream ifsp, ifsT;
 
-        ifsp.open(*pName, ios::in);
+        ifsp.open(pName, ios::in);
         P.assign((istreambuf_iterator<char>(ifsp)), (istreambuf_iterator<char>()));
 
-        ifsT.open(*TName, ios::in);
+        ifsT.open(TName, ios::in);
         T.assign((istreambuf_iterator<char>(ifsT)), (istreambuf_iterator<char>()));
 
     }
