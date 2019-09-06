@@ -3,7 +3,7 @@
 #include "kmp.h"
 
 int main(){
-    kmp KMP("pattern.txt", "text.txt");
+    kmp KMP("pattern.txt", "random.txt");
 
     KMP.kmp_matcher();
 
