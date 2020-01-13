@@ -21,8 +21,9 @@ def findE(pi):
     return i
 
 def findD(e, n):
+    print(str(e)+" "+ str(n))
     (d, x, y) = extEuclid(e, n)
-    return x
+    return x % n
 
 
 #p = randPrime()
@@ -32,7 +33,7 @@ def RSA():
     p = 17
     q = 19
 
-    n = p* q
+    n = p * q
     pi = phi(p, q)
     e = findE(pi)
     print("e:", e)
@@ -42,9 +43,9 @@ def RSA():
 
 #main
 
-(d, n, e, n) = RSA()
+(e, n, d, n) = RSA()
 
-M = 23
+M = 53
 
 print("Public Key(e,n): (", e, ",", n,")")
 print("Private Key(d,n): (", d,",", n,")")
