@@ -32,12 +32,12 @@ public:
         constructTree();
     }
     void search(string P){
-        int index = 0;
+        unsigned int index = 0;
         Node* curNode = root;
         bool matchFound = false;
         while(index < P.length()){
-            if(curNode->forward[P[index]] != nullptr){
-                curNode = curNode->forward[P[index]];
+            if(curNode->forward[int(P[index])] != nullptr){
+                curNode = curNode->forward[int(P[index])];
                 if (index == P.length() - 1)
                 {
                     //match
@@ -111,30 +111,30 @@ private:
 
         while(index < size){
             //make new branch
-            if(curNode->forward[T[index]] == nullptr){
+            if(curNode->forward[int(T[index])] == nullptr){
                 //made tail terminal node
-                curNode->forward[T[index]] = new Node(index, size-1);
-                curNode->forward[T[index]]->sufIndex = pos;
+                curNode->forward[int(T[index])] = new Node(index, size-1);
+                curNode->forward[int(T[index])]->sufIndex = pos;
                 return;
             }
             //contracted locus
             prevNode = curNode;
             //extended locus
-            curNode = curNode->forward[T[index]];
+            curNode = curNode->forward[int(T[index])];
             int prevIndex = index;
 
             if(!findEnd(curNode, index)){
                 //branch in the middle
                 Node* temp = curNode;
                 //make new node
-                prevNode->forward[T[prevIndex]] = new Node(prevIndex, index-1);
-                temp = prevNode->forward[T[prevIndex]];
+                prevNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1);
+                temp = prevNode->forward[int(T[prevIndex])];
                 //new tail
-                temp->forward[T[index]] = new Node(index, size-1);
-                temp->forward[T[index]]->sufIndex = pos;
+                temp->forward[int(T[index])] = new Node(index, size-1);
+                temp->forward[int(T[index])]->sufIndex = pos;
                 //add extended node
                 curNode->start = curNode->start + index-prevIndex;
-                temp->forward[T[curNode->start]] = curNode;
+                temp->forward[int(T[curNode->start])] = curNode;
                 return;
             }
             //index already increased by findEnd
