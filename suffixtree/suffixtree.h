@@ -148,13 +148,15 @@ private:
     }
     void linearConstruction()
     {
+        ////McCreight's algorithm
+        
         root = new Node(-1, -1);
         root->sLink = root;
 
         Node *curNode = root;
         Node *contractedNode = root;
-        Node *extendedNode;
-        Node* head;
+        Node *extendedNode = root;
+        Node* head = root;
 
         Node *cNode, *dNode;
 
