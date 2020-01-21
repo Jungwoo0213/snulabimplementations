@@ -146,7 +146,7 @@ private:
             //index already increased by findEnd
         }
     }
-    void linearConstruction(int index)
+    void linearConstruction()
     {
         root = new Node(-1, -1);
         root->sLink = root;
@@ -165,22 +165,9 @@ private:
 
         while (pos < size)
         {
-            //make new branch
-            if (curNode->forward[int(T[index])] == nullptr)
-            {
-                //made tail terminal node
-                curNode->forward[int(T[index])] = new Node(index, size - 1);
-                curNode->forward[int(T[index])]->sufIndex = pos;
-                return;
-            }
             ///////////////////
             /// Substep A
             //////////////////
-            /*
-            //extended locus
-            extendedNode = curNode->forward[int(T[index])];
-            */
-
             cNode = contractedNode->sLink;
             if(contractedNode != root){
                 betaSize = extendedNode->length();
