@@ -149,7 +149,7 @@ private:
     void linearConstruction()
     {
         ////McCreight's algorithm
-        
+
         root = new Node(-1, -1);
         root->sLink = root;
 
@@ -171,11 +171,9 @@ private:
             /// Substep A
             //////////////////
             cNode = contractedNode->sLink;
-            if(contractedNode != root){
+            if(extendedNode != root){
                 betaSize = extendedNode->length();
                 betaIndex = extendedNode->start;
-            } else {
-
             }
             ////////////////
             /// Substep B
@@ -238,6 +236,7 @@ private:
                     //add extended node
                     curNode->start = curNode->start + curIndex - prevIndex;
                     head->forward[int(T[curNode->start])] = curNode;
+                    break;
                 }
             }
 
