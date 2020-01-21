@@ -125,16 +125,15 @@ private:
 
             if(!findEnd(curNode, index)){
                 //branch in the middle
-                Node* temp = curNode;
-                //make new node
+                //make new node (head)
                 prevNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1);
-                temp = prevNode->forward[int(T[prevIndex])];
+                Node* head = prevNode->forward[int(T[prevIndex])];
                 //new tail
-                temp->forward[int(T[index])] = new Node(index, size-1);
-                temp->forward[int(T[index])]->sufIndex = pos;
+                head->forward[int(T[index])] = new Node(index, size-1);
+                head->forward[int(T[index])]->sufIndex = pos;
                 //add extended node
                 curNode->start = curNode->start + index-prevIndex;
-                temp->forward[int(T[curNode->start])] = curNode;
+                head->forward[int(T[curNode->start])] = curNode;
                 return;
             }
             //index already increased by findEnd
