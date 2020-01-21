@@ -5,3 +5,4 @@ SNU lab implementations
 3. Dijkstra Shorted path  
 4. KMP string search  
 5. RSA  
+6. Suffix Tree  
