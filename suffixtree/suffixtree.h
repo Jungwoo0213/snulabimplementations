@@ -28,6 +28,7 @@ public:
         this->T = T;
         this->T.push_back(3);
         this->size = this->T.length();
+        cout<< "Text size: "<<size<<endl;
         constructTree();
     }
     void search(string P){
@@ -44,7 +45,10 @@ public:
                     break;
                 }
                 index++;
+                #ifdef DEBUG
                 cout << curNode->start<<" "<<curNode->end<<endl;
+                #endif
+
                 for(int i= curNode->start+1; i<=curNode->end; i++){
                     if(T[i]==P[index]) {
                         if(index==P.length()-1){
@@ -58,23 +62,30 @@ public:
                         break;
                     }
                 }
+                
+                #ifdef DEBUG
                 cout << "index: "<<index<<endl;
+                #endif
+
                 if(matchFound)
                     //match found
                     break;
             }else {
+                cout << "no match: cannot find forward"<<endl;
                 //match not found
                 break;
             }
         }
         if(matchFound){
-            //match found
+            //match found 
+            //find terminal nodes by dfs
             dfs(curNode);
         }else {
             cout << "No match at Pattern index " << index << " with " << P[index] << endl;
             return;
         }
     }
+
     void dfs(Node* curNode){
         for(int i =0; i<MAX_CHAR;i++){
             if(curNode->forward[i] != nullptr)
@@ -90,6 +101,8 @@ private:
         for(int i=0; i<size; i++)
             insert(i);
         cout << "Finished construction of suffix tree!"<<endl;
+        cout << "--------------------------------------" << endl;
+        cout << endl;
     }
     void insert(int index){
         Node* curNode = root;
@@ -104,23 +117,27 @@ private:
                 curNode->forward[T[index]]->sufIndex = pos;
                 return;
             }
+            //contracted locus
             prevNode = curNode;
+            //extended locus
             curNode = curNode->forward[T[index]];
             int prevIndex = index;
+
             if(!findEnd(curNode, index)){
                 //branch in the middle
                 Node* temp = curNode;
                 //make new node
                 prevNode->forward[T[prevIndex]] = new Node(prevIndex, index-1);
+                temp = prevNode->forward[T[prevIndex]];
                 //new tail
-                prevNode->forward[T[prevIndex]]->forward[T[index]] = new Node(index, size-1);
-                prevNode->forward[T[prevIndex]]->forward[T[index]]->sufIndex = pos;
+                temp->forward[T[index]] = new Node(index, size-1);
+                temp->forward[T[index]]->sufIndex = pos;
                 //add extended node
                 curNode->start = curNode->start + index-prevIndex;
-                prevNode->forward[T[prevIndex]]->forward[T[curNode->start]] = curNode;
+                temp->forward[T[curNode->start]] = curNode;
                 return;
             }
-            index++;
+            //index already increased by findEnd
         }
     }
     bool findEnd(Node* curNode, int& index){
