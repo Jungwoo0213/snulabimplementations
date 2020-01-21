@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <assert.h>
 
 using namespace std;
 
@@ -10,12 +11,17 @@ public:
     //for leaf nodes;
     int sufIndex = -1;
 
+    Node* sLink;
+
     int start;
     int end;
     Node* forward[MAX_CHAR]{nullptr};
     Node(int start, int end){
         this->start = start;
         this->end = end;
+    }
+    int length(){
+        return end-start+1;
     }
 };
 
@@ -98,6 +104,7 @@ public:
 private:
     void constructTree(){
         root = new Node(-1, -1);
+        root->sLink = root;
         for(int i=0; i<size; i++)
             insert(i);
         cout << "Finished construction of suffix tree!"<<endl;
@@ -106,7 +113,7 @@ private:
     }
     void insert(int index){
         Node* curNode = root;
-        Node* prevNode = root;
+        Node* contractedNode;
         int pos = index;
 
         while(index < size){
@@ -118,7 +125,7 @@ private:
                 return;
             }
             //contracted locus
-            prevNode = curNode;
+            contractedNode = curNode;
             //extended locus
             curNode = curNode->forward[int(T[index])];
             int prevIndex = index;
@@ -126,8 +133,8 @@ private:
             if(!findEnd(curNode, index)){
                 //branch in the middle
                 //make new node (head)
-                prevNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1);
-                Node* head = prevNode->forward[int(T[prevIndex])];
+                contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1);
+                Node* head = contractedNode->forward[int(T[prevIndex])];
                 //new tail
                 head->forward[int(T[index])] = new Node(index, size-1);
                 head->forward[int(T[index])]->sufIndex = pos;
@@ -138,6 +145,120 @@ private:
             }
             //index already increased by findEnd
         }
+    }
+    void linearConstruction(int index)
+    {
+        root = new Node(-1, -1);
+        root->sLink = root;
+
+        Node *curNode = root;
+        Node *contractedNode = root;
+        Node *extendedNode;
+        Node* head;
+
+        Node *cNode, *dNode;
+
+        int index = 0;
+        int pos = index;
+        int betaSize = 0;
+        int betaIndex = 0;
+
+        while (pos < size)
+        {
+            //make new branch
+            if (curNode->forward[int(T[index])] == nullptr)
+            {
+                //made tail terminal node
+                curNode->forward[int(T[index])] = new Node(index, size - 1);
+                curNode->forward[int(T[index])]->sufIndex = pos;
+                return;
+            }
+            ///////////////////
+            /// Substep A
+            //////////////////
+            /*
+            //extended locus
+            extendedNode = curNode->forward[int(T[index])];
+            */
+
+            cNode = contractedNode->sLink;
+            if(contractedNode != root){
+                betaSize = extendedNode->length();
+                betaIndex = extendedNode->start;
+            } else {
+
+            }
+            ////////////////
+            /// Substep B
+            ////////////////
+            //rescanning beta
+            Node *prevNode = cNode;
+            curNode = cNode->forward[int(T[betaIndex])];
+            while(1){
+                if( betaSize > curNode->length()){
+                    betaIndex += curNode->length();
+                    betaSize -= curNode->length();
+                    prevNode = curNode;
+                    curNode = curNode->forward[int(T[betaIndex])];
+                    assert(curNode!=nullptr);
+                } else if(betaSize == curNode->length()) {
+                    dNode = curNode;
+                    break;
+                } else {
+                    //make new node
+                    dNode = new Node(betaIndex, betaIndex + betaSize - 1);
+                    Node *tempNode = prevNode->forward[int(T[betaIndex])];
+                    prevNode->forward[int(T[betaIndex])] = dNode;
+
+                    tempNode->start = betaIndex+betaSize;
+                    dNode->forward[int(T[betaIndex+betaSize])] = tempNode;
+                    break;
+                }
+                assert(betaSize>0);
+            }
+            ////////////////
+            /// Substep C
+            ////////////////
+            head->sLink = dNode;
+            int curIndex = betaIndex + betaSize;
+            curNode = dNode;
+            while(curIndex < size){
+                if(curNode->forward[int(T[curIndex])] == nullptr){
+                    //made tail terminal node
+                    curNode->forward[int(T[index])] = new Node(curIndex, size - 1);
+                    curNode->forward[int(T[index])]->sufIndex = pos;
+                    break;
+                }
+                int prevIndex = curIndex;
+                prevNode = curNode;
+                curNode = curNode->forward[int(T[curIndex])];
+
+                if(!findEnd(curNode, curIndex)){
+                    contractedNode = prevNode;
+                    extendedNode = curNode;
+
+                    //branch in the middle
+                    //make new node (head)
+                    contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, curIndex-1);
+                    head = contractedNode->forward[int(T[prevIndex])];
+
+                    //new tail
+                    head->forward[int(T[index])] = new Node(curIndex, size-1);
+                    head->forward[int(T[index])]->sufIndex = pos;
+
+                    //add extended node
+                    curNode->start = curNode->start + curIndex - prevIndex;
+                    head->forward[int(T[curNode->start])] = curNode;
+                }
+            }
+
+            //next suffix
+            pos++;
+        }
+
+        cout << "Finished linear construction of suffix tree!" << endl;
+        cout << "--------------------------------------" << endl;
+        cout << endl;
     }
     bool findEnd(Node* curNode, int& index){
         //do not have to compare the first char
