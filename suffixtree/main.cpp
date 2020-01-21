@@ -11,6 +11,6 @@ int main(){
     string TEXT = "banana";
     //string TEXT((istreambuf_iterator<char>(fs)), (istreambuf_iterator<char>()) );
     SuffixTree ST(TEXT);
-    ST.search("by");
+    ST.search("c");
     return 0;
 }

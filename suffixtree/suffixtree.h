@@ -37,6 +37,12 @@ public:
         while(index < P.length()){
             if(curNode->forward[P[index]] != nullptr){
                 curNode = curNode->forward[P[index]];
+                if (index == P.length() - 1)
+                {
+                    //match
+                    matchFound = true;
+                    break;
+                }
                 index++;
                 cout << curNode->start<<" "<<curNode->end<<endl;
                 for(int i= curNode->start+1; i<=curNode->end; i++){
@@ -52,6 +58,7 @@ public:
                         break;
                     }
                 }
+                cout << "index: "<<index<<endl;
                 if(matchFound)
                     //match found
                     break;
@@ -82,6 +89,7 @@ private:
         root = new Node(-1, -1);
         for(int i=0; i<size; i++)
             insert(i);
+        cout << "Finished construction of suffix tree!"<<endl;
     }
     void insert(int index){
         Node* curNode = root;
