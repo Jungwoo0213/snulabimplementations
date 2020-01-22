@@ -35,7 +35,8 @@ public:
         this->T.push_back(3);
         this->size = this->T.length();
         cout<< "Text size: "<<size<<endl;
-        constructTree();
+        //constructTree();
+        linearConstruction();
     }
     void search(string P){
         unsigned int index = 0;
@@ -150,7 +151,7 @@ private:
     {
         ////McCreight's algorithm
 
-        root = new Node(-1, -1);
+        root = new Node(0, -1);
         root->sLink = root;
 
         Node *curNode = root;
@@ -160,67 +161,120 @@ private:
 
         Node *cNode, *dNode;
 
-        int index = 0;
-        int pos = index;
+        int pos = 0;
         int betaSize = 0;
         int betaIndex = 0;
 
+        
+
         while (pos < size)
-        {
+        {   
+            #ifdef DEBUG
+            cout << "pos: "<<pos<<endl;
+            #endif
             ///////////////////
             /// Substep A
             //////////////////
             cNode = contractedNode->sLink;
-            if(extendedNode != root){
-                betaSize = extendedNode->length();
-                betaIndex = extendedNode->start;
+            betaSize = head->length();
+            betaIndex = head->start;
+
+            if(cNode->length() == 0 ){
+                betaSize--;
+                betaIndex++;
             }
+
+            #ifdef DEBUG
+            cout << "betaSize: "<<betaSize<<" betaIndex: "<<betaIndex<<endl;
+            #endif
             ////////////////
             /// Substep B
             ////////////////
             //rescanning beta
             Node *prevNode = cNode;
-            curNode = cNode->forward[int(T[betaIndex])];
-            while(1){
-                if( betaSize > curNode->length()){
-                    betaIndex += curNode->length();
-                    betaSize -= curNode->length();
-                    prevNode = curNode;
-                    curNode = curNode->forward[int(T[betaIndex])];
-                    assert(curNode!=nullptr);
-                } else if(betaSize == curNode->length()) {
-                    dNode = curNode;
-                    break;
-                } else {
-                    //make new node
-                    dNode = new Node(betaIndex, betaIndex + betaSize - 1);
-                    Node *tempNode = prevNode->forward[int(T[betaIndex])];
-                    prevNode->forward[int(T[betaIndex])] = dNode;
+            int oriBetaSize = betaSize;
+            if(betaSize>0){
+                
+                curNode = cNode->forward[int(T[betaIndex])];
 
-                    tempNode->start = betaIndex+betaSize;
-                    dNode->forward[int(T[betaIndex+betaSize])] = tempNode;
-                    break;
+#ifdef DEBUG
+                cout << "betaSize>0" << endl;
+                cout << "curNode->length(): " << curNode->length() << endl;
+                cout << "t: " << T[betaIndex] << endl;
+                cout << "curnode start: " << curNode->start << endl;
+#endif
+                int oriBetaSize = betaSize;
+                while(1){
+                    if( betaSize > curNode->length()){
+                        betaIndex += curNode->length();
+                        betaSize -= curNode->length();
+                        prevNode = curNode;
+                        curNode = curNode->forward[int(T[betaIndex])];
+                        assert(curNode!=nullptr);
+                    } else if(betaSize == curNode->length()) {
+                        dNode = curNode;
+                        break;
+                    } else {
+                        //make new node
+                        dNode = new Node(betaIndex, betaIndex + betaSize - 1);
+                        Node *tempNode = prevNode->forward[int(T[betaIndex])];
+                        prevNode->forward[int(T[betaIndex])] = dNode;
+
+                        tempNode->start = tempNode->start + oriBetaSize;
+                        dNode->forward[int(T[tempNode->start])] = tempNode;
+
+                        cout <<"tempNode start: "<<tempNode->start<<endl;
+                        break;
+                    }
+                    assert(betaSize>0);
                 }
-                assert(betaSize>0);
+            } else {
+                dNode = cNode;
             }
             ////////////////
             /// Substep C
             ////////////////
             head->sLink = dNode;
-            int curIndex = betaIndex + betaSize;
+            //int curIndex = pos + betaIndex + betaSize;
+            int curIndex;
+            if(dNode != root)
+                curIndex = pos + oriBetaSize;
+            else
+                curIndex = pos+1;
+            
+            #ifdef DEBUG
+            cout << "curIndex: "<<curIndex<<endl;
+            #endif
             curNode = dNode;
+            prevNode = curNode;
             while(curIndex < size){
+                cout << "pass"<<endl;
                 if(curNode->forward[int(T[curIndex])] == nullptr){
+                    #ifdef DEBUG
+                    cout << "no forward!"<<endl;
+                    cout << "curIndex: "<<curIndex<<endl;
+                    #endif
                     //made tail terminal node
-                    curNode->forward[int(T[index])] = new Node(curIndex, size - 1);
-                    curNode->forward[int(T[index])]->sufIndex = pos;
+                    curNode->forward[int(T[curIndex])] = new Node(curIndex, size - 1);
+                    curNode->forward[int(T[curIndex])]->sufIndex = pos;
+                    head = curNode;
+                    contractedNode = prevNode;
+                    extendedNode = curNode;
                     break;
                 }
+                #ifdef DEBUG
+                cout << "found"<<endl;
+                #endif
+
                 int prevIndex = curIndex;
                 prevNode = curNode;
                 curNode = curNode->forward[int(T[curIndex])];
 
                 if(!findEnd(curNode, curIndex)){
+                    #ifdef DEBUG
+                    cout << "could not find end"<<endl;
+                    #endif
+
                     contractedNode = prevNode;
                     extendedNode = curNode;
 
@@ -230,15 +284,25 @@ private:
                     head = contractedNode->forward[int(T[prevIndex])];
 
                     //new tail
-                    head->forward[int(T[index])] = new Node(curIndex, size-1);
-                    head->forward[int(T[index])]->sufIndex = pos;
+                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1);
+                    head->forward[int(T[curIndex])]->sufIndex = pos;
 
                     //add extended node
                     curNode->start = curNode->start + curIndex - prevIndex;
                     head->forward[int(T[curNode->start])] = curNode;
+
+                    #ifdef DEBUG
+                    cout << "prevIndex: " << prevIndex << " curIndex: " <<curIndex << endl;
+                    cout << "curNode start: "<<curNode->start<<endl;
+                    #endif
+
                     break;
                 }
             }
+
+            #ifdef DEBUG
+            cout << "----------------"<<endl;
+            #endif
 
             //next suffix
             pos++;
