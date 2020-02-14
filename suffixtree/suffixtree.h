@@ -237,14 +237,10 @@ private:
                 int curSize = betaSize;
                 Node *fNode = cNode;
                 while(curSize>0 && fNode->forward[int(T[curIndex])]->length()<=curSize){
-                    cout << "curSize: "<<curSize<<endl;
                     fNode = fNode->forward[int(T[curIndex])];
                     curIndex = curIndex + fNode->length();
                     curSize = curSize - fNode->length();
-                    cout << "curSize after: "<<curSize <<endl;
-                    cout << "curIndex: "<<curIndex<<endl;
                 }
-                cout << "hi"<<endl;
 
                 assert(curSize>=0);
                 if(curSize ==0){
