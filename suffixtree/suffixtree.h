@@ -16,10 +16,14 @@ public:
 
     int start;
     int end;
+    
+    int depth;
+
     Node* forward[MAX_CHAR]{nullptr};
-    Node(int start, int end){
+    Node(int start, int end, int depth){
         this->start = start;
         this->end = end;
+        this->depth = depth;
     }
     int length(){
         return end-start+1;
@@ -127,7 +131,7 @@ public:
     }
 private:
     void constructTree(){
-        root = new Node(-1, -1);
+        root = new Node(-1, -1, 0);
         root->sLink = root;
         for(int i=0; i<size; i++)
             insert(i);
@@ -140,11 +144,13 @@ private:
         Node* contractedNode;
         int pos = index;
 
+        int depth = 0;
+
         while(index < size){
             //make new branch
             if(curNode->forward[int(T[index])] == nullptr){
                 //made tail terminal node
-                curNode->forward[int(T[index])] = new Node(index, size-1);
+                curNode->forward[int(T[index])] = new Node(index, size-1, 0);
                 curNode->forward[int(T[index])]->sufIndex = pos;
                 return;
             }
@@ -154,13 +160,13 @@ private:
             curNode = curNode->forward[int(T[index])];
             int prevIndex = index;
 
-            if(!findEnd(curNode, index)){
+            if(!findEnd(curNode, index, depth)){
                 //branch in the middle
                 //make new node (head)
-                contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1);
+                contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, index-1, 0);
                 Node* head = contractedNode->forward[int(T[prevIndex])];
                 //new tail
-                head->forward[int(T[index])] = new Node(index, size-1);
+                head->forward[int(T[index])] = new Node(index, size-1, 0);
                 head->forward[int(T[index])]->sufIndex = pos;
                 //add extended node
                 curNode->start = curNode->start + index-prevIndex;
@@ -173,7 +179,7 @@ private:
     void linearConstruction2(){
         //McCreight's algorithm
 
-        root = new Node(0, -1);
+        root = new Node(0, -1, 0);
         root->sLink = root;
 
         Node *contractedLocus = root;
@@ -189,6 +195,9 @@ private:
         int betaIndex;
 
         while(pos<size){
+            int depth = 0;
+            prevNode = nullptr;
+
             #ifdef DEBUG
             cout << "pos: "<<pos<<endl;
             #endif
@@ -216,15 +225,19 @@ private:
                 #endif
 
                 cNode = contractedLocus->sLink;
-
-
+                depth = cNode->depth;
 
                 betaSize = head->length();
                 betaIndex = head->start;
+
+                if(head == contractedLocus){
+                    betaSize = 0;
+                }
             }
 
             #ifdef DEBUG
             cout << "betaSize: "<< betaSize << " betaIndex: "<<betaIndex<<endl;
+            cout << "cNode depth: "<< cNode->depth<<endl;
             #endif
 
             ///////////////////
@@ -238,9 +251,14 @@ private:
                 Node *fNode = cNode;
                 while(curSize>0 && fNode->forward[int(T[curIndex])]->length()<=curSize){
                     fNode = fNode->forward[int(T[curIndex])];
-                    curIndex = curIndex + fNode->length();
+                    curIndex = curIndex + fNode->length();                    
+                    depth = depth + curSize;
                     curSize = curSize - fNode->length();
                 }
+
+                #ifdef DEBUG
+                //cout << "cursize: "<<curSize << " forward len: "<< fNode->forward[int(T[curIndex])]->length()<<endl;
+                #endif
 
                 assert(curSize>=0);
                 if(curSize ==0){
@@ -249,10 +267,14 @@ private:
                     //make new nonterminal node
                     Node* cutNode = fNode->forward[int(T[curIndex])];
                     prevNode = fNode;
-                    dNode = new Node(curIndex, curIndex+curSize-1);
+                    dNode = new Node(curIndex, curIndex+curSize-1, depth+curSize);
                     fNode->forward[int(T[curIndex])] = dNode;
                     cutNode->start = cutNode->start + curSize;
                     dNode->forward[int(T[cutNode->start])] = cutNode;
+
+                    #ifdef DEBUG
+                    cout << "new nonterminal node(step b): "<<curIndex<< " - "<<curIndex+curSize-1<<endl;
+                    #endif
                 }
             }
 
@@ -266,6 +288,10 @@ private:
                 curIndex = betaIndex + betaSize;
             else
                 curIndex = pos;
+            
+            if(cNode != root && betaSize==0)
+                curIndex = pos + cNode->depth;
+
             
             Node* curNode = dNode;
 
@@ -281,10 +307,10 @@ private:
 
                 if(curNode->forward[int(T[curIndex])]==nullptr){
                     #ifdef DEBUG
-                        cout << "making new node"<<endl;
+                        cout << "making new node: "<<curIndex << " - "<<size-1<<endl;
                     #endif
 
-                    Node *newTail = new Node(curIndex, size - 1);
+                    Node *newTail = new Node(curIndex, size - 1, size-curIndex);
                     curNode->forward[int(T[curIndex])] = newTail;
                     newTail->sufIndex = pos;
                     head = curNode;
@@ -297,21 +323,28 @@ private:
                 curNode = curNode->forward[int(T[curIndex])];
                 prevIndex = curIndex;
 
-                if(!findEnd(curNode, curIndex)){
+                if(!findEnd(curNode, curIndex, depth)){
                     contractedLocus = prevNode;
                     extendedLocus = curNode;
 
+                    #ifdef DEBUG
+                    cout << "new Node(middle): "<<prevIndex<<" - "<<curIndex-1<<endl;
+                    cout << "tail: "<<curIndex<<" - "<<size-1<<endl;
+                    cout << "extended node start: "<< curNode->start +curIndex - prevIndex<<endl;
+                    #endif
+
                     //branch in the middle
                     //make new node
-                    head = new Node(prevIndex, curIndex-1);
+                    head = new Node(prevIndex, curIndex-1, depth-1);
                     contractedLocus->forward[int(T[prevIndex])] = head;
 
                     //newtail
-                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1);
+                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1, depth+size-curIndex);
                     head->forward[int(T[curIndex])]->sufIndex = pos;
 
                     //add extened node
                     curNode->start = curNode->start +curIndex - prevIndex;
+                    curNode->depth = curNode->depth + curIndex - prevIndex;
                     head->forward[int(T[curNode->start])] = curNode;
 
                     break;
@@ -324,6 +357,8 @@ private:
 
             //next suffix
             pos++;
+
+            
         }
         
     }
@@ -332,7 +367,7 @@ private:
     {
         ////McCreight's algorithm
 
-        root = new Node(0, -1);
+        root = new Node(0, -1, 0);
         root->sLink = root;
 
         Node *curNode = root;
@@ -395,7 +430,7 @@ private:
                         break;
                     } else {
                         //make new node
-                        dNode = new Node(betaIndex, betaIndex + betaSize - 1);
+                        dNode = new Node(betaIndex, betaIndex + betaSize - 1, 0);
                         Node *tempNode = prevNode->forward[int(T[betaIndex])];
                         prevNode->forward[int(T[betaIndex])] = dNode;
 
@@ -434,7 +469,7 @@ private:
                     cout << "curIndex: "<<curIndex<<endl;
                     #endif
                     //made tail terminal node
-                    curNode->forward[int(T[curIndex])] = new Node(curIndex, size - 1);
+                    curNode->forward[int(T[curIndex])] = new Node(curIndex, size - 1, 0);
                     curNode->forward[int(T[curIndex])]->sufIndex = pos;
                     head = curNode;
                     contractedNode = prevNode;
@@ -449,7 +484,9 @@ private:
                 prevNode = curNode;
                 curNode = curNode->forward[int(T[curIndex])];
 
-                if(!findEnd(curNode, curIndex)){
+                int depth = 0;
+
+                if(!findEnd(curNode, curIndex, depth)){
                     #ifdef DEBUG
                     cout << "could not find end"<<endl;
                     #endif
@@ -459,11 +496,11 @@ private:
 
                     //branch in the middle
                     //make new node (head)
-                    contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, curIndex-1);
+                    contractedNode->forward[int(T[prevIndex])] = new Node(prevIndex, curIndex-1, 0);
                     head = contractedNode->forward[int(T[prevIndex])];
 
                     //new tail
-                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1);
+                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1, 0);
                     head->forward[int(T[curIndex])]->sufIndex = pos;
 
                     //add extended node
@@ -491,12 +528,14 @@ private:
         cout << "--------------------------------------" << endl;
         cout << endl;
     }
-    bool findEnd(Node* curNode, int& index){
+    bool findEnd(Node* curNode, int& index, int& depth){
         //do not have to compare the first char
         index++;
+        depth++;
         for(int i= curNode->start+1; i<=curNode->end;i++){
             if(T[i]==T[index]){
                 index++;
+                depth++;
             }else{
                 //branch in the middle
                 return false;
