@@ -43,7 +43,7 @@ public:
         this->size = this->T.length();
         cout<< "Text size: "<<size<<endl;
         //constructTree();
-        linearConstruction3();
+        linearConstruction2();
     }
     void search(string P){
         unsigned int index = 0;
