@@ -11,15 +11,16 @@ int main(int argc, char* argv[]){
     //string TEXT = "mississippi";
     //string TEXT = "abaaba";
     //string TEXT = "banana";
-    //string TEXT = "bbbbbababbbaabbbbb";
+    string TEXT = "bbbbbababbbaabbbbb";
     //string TEXT = "bbbbbababbbaabbbbbbbbbbababbbaabbbbb";
-    string TEXT((istreambuf_iterator<char>(fs)), (istreambuf_iterator<char>()) );
+    //string TEXT((istreambuf_iterator<char>(fs)), (istreambuf_iterator<char>()) );
+    
     SuffixTree ST(TEXT);
 
     if(argc >= 2){
         string arg1(argv[1]);
 
-        if(arg1 == "s"){
+        if(arg1 == "tree"){
             cout << "*****SUFFIX TREE*****" << endl;
             ST.print();
             cout << endl;
@@ -38,7 +39,9 @@ int main(int argc, char* argv[]){
                 cin >> query;
             }
         }
+    } else {
+        cout <<"finished making suffix tree"<<endl;
     }
-    
+
     return 0;
 }

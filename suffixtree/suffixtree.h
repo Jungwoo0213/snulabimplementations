@@ -20,11 +20,13 @@ public:
     int depth;
 
     Node* forward[MAX_CHAR]{nullptr};
+
     Node(int start, int end, int depth){
         this->start = start;
         this->end = end;
         this->depth = depth;
     }
+
     int length(){
         return end-start+1;
     }
@@ -43,7 +45,7 @@ public:
         this->size = this->T.length();
         cout<< "Text size: "<<size<<endl;
         //constructTree();
-        linearConstruction2();
+        linearConstruction();
     }
     void search(string P){
         unsigned int index = 0;
@@ -179,7 +181,7 @@ private:
             //index already increased by findEnd
         }
     }
-    void linearConstruction2(){
+    void linearConstruction(){
         //McCreight's algorithm
         root = new Node(0, -1, 0);
         root->sLink = root;
@@ -383,192 +385,6 @@ private:
         }
     }
 
-    void linearConstruction1(){
-        //McCreight's algorithm
-
-        root = new Node(0, -1, 0);
-        root->sLink = root;
-
-        Node *contractedLocus = root;
-        Node *extendedLocus = root;
-        Node *head = root;
-
-        Node *cNode, *dNode;
-        Node *prevNode = nullptr;
-
-        int pos = 0;
-
-        int betaSize;
-        int betaIndex;
-
-        while(pos<size){
-            int depth = 0;
-            prevNode = nullptr;
-
-            #ifdef DEBUG
-            cout << "pos: "<<pos<<endl;
-            #endif
-            ///////////////////
-            /// Substep A
-            ///////////////////
-            if(contractedLocus == root){
-                #ifdef DEBUG
-                cout<< "alpha is empty"<<endl;
-                #endif
-
-                //alpha empty
-                cNode = root;
-                //calculate beta
-                if(head->length()>0){
-                    betaSize = head->length()-1;
-                    betaIndex = head->start+1;
-                } else {
-                    betaSize = -1;
-                    betaIndex = -1;
-                }
-            }else{
-                #ifdef DEBUG
-                cout << "contractedlocus is not root"<<endl;
-                #endif
-
-                cNode = contractedLocus->sLink;
-                depth = cNode->depth;
-
-                betaSize = head->length();
-                betaIndex = head->start;
-
-                if(head == contractedLocus){
-                    betaSize = 0;
-                }
-            }
-
-            #ifdef DEBUG
-            cout << "betaSize: "<< betaSize << " betaIndex: "<<betaIndex<<endl;
-            cout << "cNode depth: "<< cNode->depth<<endl;
-            #endif
-
-            ///////////////////
-            /// Substep B
-            ///////////////////
-            if(betaSize<=0){
-                dNode = cNode;
-            } else {
-                int curIndex = betaIndex;
-                int curSize = betaSize;
-                Node *fNode = cNode;
-                while(curSize>0 && fNode->forward[int(T[curIndex])]->length()<=curSize){
-                    fNode = fNode->forward[int(T[curIndex])];
-                    curIndex = curIndex + fNode->length();                    
-                    depth = depth + curSize;
-                    curSize = curSize - fNode->length();
-                }
-
-                #ifdef DEBUG
-                //cout << "cursize: "<<curSize << " forward len: "<< fNode->forward[int(T[curIndex])]->length()<<endl;
-                #endif
-
-                assert(curSize>=0);
-                if(curSize ==0){
-                    dNode = fNode;
-                } else {
-                    //make new nonterminal node
-                    Node* cutNode = fNode->forward[int(T[curIndex])];
-                    prevNode = fNode;
-                    dNode = new Node(curIndex, curIndex+curSize-1, depth+curSize);
-                    fNode->forward[int(T[curIndex])] = dNode;
-                    cutNode->start = cutNode->start + curSize;
-                    dNode->forward[int(T[cutNode->start])] = cutNode;
-
-                    #ifdef DEBUG
-                    cout << "new nonterminal node(step b): "<<curIndex<< " - "<<curIndex+curSize-1<<endl;
-                    #endif
-                }
-            }
-
-            ///////////////////
-            /// Substep C
-            ///////////////////
-            head->sLink = dNode;
-            //start of gamma
-            int curIndex;
-            if(betaSize>0)
-                curIndex = betaIndex + betaSize;
-            else
-                curIndex = pos;
-            
-            if(cNode != root && betaSize==0)
-                curIndex = pos + cNode->depth;
-
-            
-            Node* curNode = dNode;
-
-            int prevIndex = curIndex;
-            if(prevNode == nullptr)
-                prevNode = curNode;
-
-            while(curIndex<size){
-                #ifdef DEBUG
-                    cout << "curIndex: "<<curIndex<<endl;
-                    cout << "checking: "<<T[curIndex]<<endl;
-                #endif
-
-                if(curNode->forward[int(T[curIndex])]==nullptr){
-                    #ifdef DEBUG
-                        cout << "making new node: "<<curIndex << " - "<<size-1<<endl;
-                    #endif
-
-                    Node *newTail = new Node(curIndex, size - 1, size-curIndex);
-                    curNode->forward[int(T[curIndex])] = newTail;
-                    newTail->sufIndex = pos;
-                    head = curNode;
-                    contractedLocus = prevNode;
-                    extendedLocus = curNode;
-                    break;
-                }
-
-                prevNode = curNode;
-                curNode = curNode->forward[int(T[curIndex])];
-                prevIndex = curIndex;
-
-                if(!findEnd(curNode, curIndex, depth)){
-                    contractedLocus = prevNode;
-                    extendedLocus = curNode;
-
-                    #ifdef DEBUG
-                    cout << "new Node(middle): "<<prevIndex<<" - "<<curIndex-1<<endl;
-                    cout << "tail: "<<curIndex<<" - "<<size-1<<endl;
-                    cout << "extended node start: "<< curNode->start +curIndex - prevIndex<<endl;
-                    #endif
-
-                    //branch in the middle
-                    //make new node
-                    head = new Node(prevIndex, curIndex-1, depth-1);
-                    contractedLocus->forward[int(T[prevIndex])] = head;
-
-                    //newtail
-                    head->forward[int(T[curIndex])] = new Node(curIndex, size-1, depth+size-curIndex);
-                    head->forward[int(T[curIndex])]->sufIndex = pos;
-
-                    //add extened node
-                    curNode->start = curNode->start +curIndex - prevIndex;
-                    curNode->depth = curNode->depth + curIndex - prevIndex;
-                    head->forward[int(T[curNode->start])] = curNode;
-
-                    break;
-                }
-            }
-
-            #ifdef DEBUG
-            cout << "--------------------"<<endl;
-            #endif
-
-            //next suffix
-            pos++;
-
-            
-        }
-        
-    }
     bool findEnd(Node* curNode, int& index, int& depth){
         //do not have to compare the first char
         //depth output is correct
