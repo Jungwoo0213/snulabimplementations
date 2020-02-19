@@ -1,4 +1,4 @@
-# snulabimplementations
+# Implementations of famous algorithms
 Algorithm implementations  
 
 1. RBtree  
