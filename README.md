@@ -1,4 +1,4 @@
-# Implementations of famous algorithms
+# Implementations of Famous Algorithms
 Algorithm implementations  
 
 1. RBtree  
