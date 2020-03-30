@@ -49,4 +49,7 @@ private:
         x->keys[i] = y.keys[t-1];
         x->n++;
     }
+    void diskRead(node* x){
+        
+    }
 };
