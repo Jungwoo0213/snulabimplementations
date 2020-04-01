@@ -6,11 +6,12 @@ using namespace std;
 
 int main(){
     int V = 4;
-    graph G(V);
-    G.addEdge(2, 0, 1);
-    G.addEdge(2, 3, 1);
-    G.addEdge(3, 1, 1);
-    G.Topological_Sort(); 
+    graph G(V, true);
+    G.addEdge(0, 1, 2);
+    G.addEdge(0, 2, 5);
+    G.addEdge(1, 3, 3);
+    G.addEdge(2, 3, 4);
+    G.minSpanning();
     
 
     /* dijkstra test

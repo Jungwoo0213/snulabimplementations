@@ -24,6 +24,36 @@ public:
         }
         S.push_back(u);
     }
+    void minSpanning(){
+        vector<int> parent(vecList.size(), -1);
+        vector<pii> key(vecList.size());
+        vector<bool> inQ(vecList.size(), true);
+
+        for(int i=0; i<key.size(); i++){
+            key[i].first = 0x3f3f3f3f;
+            key[i].second = i;
+        }
+
+        key[0].first = 0;
+        priority_queue<pii, vector<pii>, greater<pii>> PQ(key.begin(), key.end());
+
+        while(!PQ.empty()){
+            pii u = PQ.top(); PQ.pop();
+            inQ[u.second]= false;
+            for(auto vE: vecList[u.second]){
+                int v = vE.second;
+                int wUV = vE.first;
+                if(inQ[v] && wUV < key[v].first){
+                    parent[v] = u.second;
+                    key[v].first = wUV;
+                }
+            }
+        }
+
+        for(int i=0; i<vecList.size(); i++){
+            cout << parent[i] << " ";
+        } cout <<endl;
+    }
     void Topological_Sort(){
         vector<int> S;
         vector<int> found(vecList.size(), 0);
