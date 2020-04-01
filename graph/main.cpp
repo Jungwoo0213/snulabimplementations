@@ -5,18 +5,12 @@
 using namespace std;
 
 int main(){
-    int V = 8;
-    graph G(V, true);
-    G.addEdge(0, 1, 1);
-    G.addEdge(0, 4, 1);
-    G.addEdge(1, 5, 1);
+    int V = 4;
+    graph G(V);
+    G.addEdge(2, 0, 1);
     G.addEdge(2, 3, 1);
-    G.addEdge(2, 5, 1);
-    G.addEdge(2, 6, 1);
-    G.addEdge(3, 6, 1);
-    G.addEdge(3, 7, 1);
-    G.addEdge(5, 6, 1);
-    G.addEdge(6, 7, 1);
+    G.addEdge(3, 1, 1);
+    G.Topological_Sort(); 
     
 
     /* dijkstra test

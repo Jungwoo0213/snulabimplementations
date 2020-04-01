@@ -15,7 +15,31 @@ public:
         vecList.resize(V);
         this->undirected = undirected;
     }
-    void DFS(int source){
+    void dfs_rec(int u, vector<int> &S, vector<int> &found){
+        found[u] = 1;
+        for (auto vE : vecList[u]) {
+            int v = vE.second;
+            if (found[v] == 0)
+                dfs_rec(v, S, found);
+        }
+        S.push_back(u);
+    }
+    void Topological_Sort(){
+        vector<int> S;
+        vector<int> found(vecList.size(), 0);
+        vector<int> cont;
+
+        for(int i=0; i<vecList.size(); i++){
+            if (found[i]==0)
+                dfs_rec(i, S, found);
+        }
+        while(!S.empty()){
+            int u = S.back(); S.pop_back();
+            cout << u << " ";
+        } cout <<endl;
+    }
+    
+    vector<pii> DFS(int source){
         vector<int> found(vecList.size(), 0);
         vector<int> S;
         vector<int> parent(vecList.size(), -1);
@@ -39,6 +63,7 @@ public:
             }
             timestamp[u].second = time++;
         }
+        return timestamp;
     }
     vector<int> BFS(int source){
         vector<int> found(vecList.size(), 0);
