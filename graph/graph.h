@@ -9,9 +9,60 @@ typedef pair<int, int> pii; // weight, to
 class graph{
 public:
     vector<vector<pii>> vecList;
+    bool undirected = false;
 
-    graph(int V){
+    graph(int V, bool undirected=false){
         vecList.resize(V);
+        this->undirected = undirected;
+    }
+    void DFS(int source){
+        vector<int> found(vecList.size(), 0);
+        vector<int> S;
+        vector<int> parent(vecList.size(), -1);
+        vector<pii> timestamp(vecList.size());
+
+        int time = 0;
+
+        found[source] = 1;
+        
+        S.push_back(source);
+        while(!S.empty()){
+            int u = S.back(); S.pop_back();
+            timestamp[u].first = time++;
+            for(auto vE: vecList[u]){
+                int v = vE.second;
+                if(found[v]==0){
+                    S.push_back(v);
+                    found[v] = 1;
+                    parent[v] = u;
+                }
+            }
+            timestamp[u].second = time++;
+        }
+    }
+    vector<int> BFS(int source){
+        vector<int> found(vecList.size(), 0);
+        vector<int> dist(vecList.size(), 0x3f3f3f3f);
+        vector<int> parent(vecList.size(), -1);
+
+        dist[source] = 0;
+        found[source] = 1;
+
+        queue<int> Q;
+        Q.push(source);
+        while(!Q.empty()){
+            int u = Q.front(); Q.pop();
+            for(auto vE: vecList[u]){
+                int v = vE.second;
+                if(found[v]==0){
+                    found[v]=1;
+                    dist[v] = dist[u]+1;
+                    parent[v] = u;
+                    Q.push(v);
+                }
+            }
+        }
+        return dist;
     }
 
     vector<int> dijkstra(int source, int target){
@@ -51,5 +102,8 @@ public:
     }
     void addEdge(int src, int trg, int weight){
         vecList[src].push_back(make_pair(weight, trg));
+        if(undirected){
+            vecList[trg].push_back(make_pair(weight, src));
+        }
     }
 };
