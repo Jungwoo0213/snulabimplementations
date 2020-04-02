@@ -26,30 +26,29 @@ public:
     }
     void minSpanning(){
         vector<int> parent(vecList.size(), -1);
-        vector<pii> key(vecList.size());
+        vector<int> key(vecList.size(), 0x3f3f3f3f);
         vector<bool> inQ(vecList.size(), true);
 
-        for(int i=0; i<key.size(); i++){
-            key[i].first = 0x3f3f3f3f;
-            key[i].second = i;
-        }
+        priority_queue<pii, vector<pii>, greater<pii>> pq;
 
-        key[0].first = 0;
-        priority_queue<pii, vector<pii>, greater<pii>> PQ(key.begin(), key.end());
+        pq.push(make_pair(0, 0));
 
-        while(!PQ.empty()){
-            pii u = PQ.top(); PQ.pop();
-            inQ[u.second]= false;
-            for(auto vE: vecList[u.second]){
-                int v = vE.second;
-                int wUV = vE.first;
-                if(inQ[v] && wUV < key[v].first){
-                    parent[v] = u.second;
-                    key[v].first = wUV;
+        while(!pq.empty()){
+            pii u = pq.top(); pq.pop();
+            if(inQ[u.second]==true){
+                inQ[u.second]= false;
+                for(auto vE: vecList[u.second]){
+                    int v = vE.second;
+                    int wUV = vE.first;
+                    if(inQ[v] && wUV < key[v]){
+                        parent[v] = u.second;
+                        key[v] = wUV;
+                        pq.push(make_pair(key[v], v));
+                    }
                 }
             }
         }
-
+        cout << "parent: ";
         for(int i=0; i<vecList.size(); i++){
             cout << parent[i] << " ";
         } cout <<endl;
