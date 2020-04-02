@@ -15,15 +15,6 @@ public:
         vecList.resize(V);
         this->undirected = undirected;
     }
-    void dfs_rec(int u, vector<int> &S, vector<int> &found){
-        found[u] = 1;
-        for (auto vE : vecList[u]) {
-            int v = vE.second;
-            if (found[v] == 0)
-                dfs_rec(v, S, found);
-        }
-        S.push_back(u);
-    }
     void minSpanning(){
         vector<int> parent(vecList.size(), -1);
         vector<int> key(vecList.size(), 0x3f3f3f3f);
@@ -52,6 +43,15 @@ public:
         for(int i=0; i<vecList.size(); i++){
             cout << parent[i] << " ";
         } cout <<endl;
+    }
+    void dfs_rec(int u, vector<int> &S, vector<int> &found){
+        found[u] = 1;
+        for (auto vE : vecList[u]){
+            int v = vE.second;
+            if (found[v] == 0)
+                dfs_rec(v, S, found);
+        }
+        S.push_back(u);
     }
     void Topological_Sort(){
         vector<int> S;
@@ -128,8 +128,7 @@ public:
         dist[source] = 0;
         
         while(!pq.empty()){
-            int u = pq.top().second;
-            pq.pop();
+            int u = pq.top().second; pq.pop();
 
             for (auto it = vecList[u].begin(); it!=vecList[u].end(); it++){
                 int v = it->second;
